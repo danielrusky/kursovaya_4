@@ -1,4 +1,4 @@
-class Vacansy:
+class Vacancy:
 
     def __init__(self, title, url, salary, experience):
         self.title = title
@@ -14,6 +14,8 @@ class Vacansy:
             "experience": self.experience
         }
 
+    def __str__(self):
+        return f"{self.title}\n{self.url}"
 
-class Vacancy:
-    pass
+    def __lt__(self, other):
+        return self.salary < other.salary

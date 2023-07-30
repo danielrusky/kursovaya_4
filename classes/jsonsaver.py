@@ -9,8 +9,15 @@ class JSONSaver():
             return json.load(file)
 
     def write_file(self, data):
+        vacancies = []
+        for i in data:
+            vacancy = {"title": i.title,
+                       "url": i.url,
+                       "salary": i.salary,
+                       "experience": i.experience}
+            vacancies.append(vacancy)
         with open(self.filename, 'w') as file:
-            file.write(json.dumps(data))
+            json.dump(vacancies, file)
 
     def add_vacancy(self, vacancy):
         data = self.read_file()

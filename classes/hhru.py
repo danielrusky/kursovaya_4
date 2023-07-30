@@ -1,35 +1,24 @@
+import os
 import requests
-
 from abstract import APIInteraction
-
 from vacancy import Vacancy
-##
+
 
 class HeadHunterAPI(APIInteraction):
-    def request(self, name, page=0):
+    def request(self, name, page):   # name, page
+        """
+        Создаем метод для получения страницы со списком вакансий
+        """
         params = {
-            "text": f'NAME: {name}',
-            "area": 1,
-            "page": page,
-            "per_page": 100
+            "text": f'NAME: {name}',  # Текст фильтра name
+            "area": 1,  # Поиск осуществляется по городу Москва
+            "page": {page},  # Индекс страницы поиска на hh page
+            "per_page": 100  # Количество вакансий на 1 странице
         }
-        get_data = requests.get("https://api.hh.ru/vacancies", params)
+
+        get_data = requests.get("https://api.hh.ru/vacancies", params=params)  # Посылаем запрос к API
         data = get_data.json()
+        print(data)
+        print(get_data)
 
-        return self.parse(data)
-
-
-
-def parse(self, data) -> list[Vacancy]:
-    vacancy_list = []
-    for vacancy in data["items"]:
-        name = vacancy['name']
-        url = vacancy['alternate_url']
-        if "salary" in vacancy and vacancy ["salar"]:
-            salary = f' от {vacancy["salary"]["from"]} до {vacancy["salary"]["to"]}'
-        else:
-            salary = f'Заработная плата не указана'
-        experience = vacancy["snippet"]["requirement"]
-        vacancy_list.append(Vacancy(name, url, salary, experience))
-    return  vacancy_list
-
+        return data
