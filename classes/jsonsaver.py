@@ -6,7 +6,7 @@ class JSONSaver():
 
     def read_file(self):
         with open(self.filename) as file:
-            return json.load(file)
+            return json.load(file)  # Преобразуем в строку в формате json
 
     def write_file(self, data):
         vacancies = []
@@ -15,7 +15,7 @@ class JSONSaver():
                        "url": i.url,
                        "salary": i.salary,
                        "experience": i.experience}
-            vacancies.append(vacancy)
+            vacancies.append(vacancy) # записываем все данные в пустой словарь (title, url, salary, experience)
         with open(self.filename, 'w') as file:
             json.dump(vacancies, file)
 

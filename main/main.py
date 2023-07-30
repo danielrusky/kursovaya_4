@@ -1,5 +1,5 @@
 # Создание экземпяра класса для работы с API сайтов с вакансиями
-from abstract import APIInteraction
+from abc import abstractmethod
 from classes.hhru import HeadHunterAPI
 from classes.jsonsaver import JSONSaver
 from classes.vacancy import Vacancy
@@ -24,8 +24,8 @@ for api in (hhru, super_job):
     vacancies_json.extend(api.write_file)
 
 # Получение вакансий с разных платформ
-hh_vacancies = hhru.request("Python")
-superjob_vacancies = super_job.request("Python")
+hh_vacancies = hhru.request()
+superjob_vacancies = super_job.request()
 
 # Создание экземпляра класса для работы с вакансиями
 vacancy = Vacancy(f'{name_founder}, "<https://hh/ru/vacancy/123456>", {first_salary}-{second_salary} руб.", '
