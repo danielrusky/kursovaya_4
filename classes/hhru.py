@@ -5,14 +5,18 @@ from vacancy import Vacancy
 
 
 class HeadHunterAPI(APIInteraction):
-    def request(self, name, page):   # name, page
+    def __init__(self, name, page):
+        self.name = name
+        self.page = page
+
+    def request(self):  # name, page
         """
         Создаем метод для получения страницы со списком вакансий
         """
         params = {
-            "text": f'NAME: {name}',  # Текст фильтра name
+            "text": f'NAME: {self.name}',  # Текст фильтра name
             "area": 1,  # Поиск осуществляется по городу Москва
-            "page": {page},  # Индекс страницы поиска на hh page
+            "page": {self.page},  # Индекс страницы поиска на hh page
             "per_page": 100  # Количество вакансий на 1 странице
         }
 
@@ -22,3 +26,7 @@ class HeadHunterAPI(APIInteraction):
         print(get_data)
 
         return data
+
+    def write_file(self, data):
+        pass
+#

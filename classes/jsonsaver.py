@@ -37,3 +37,4 @@ class JSONSaver():
             if vacancy['url'] != vacancy_.url:
                 vacancies.append(vacancy)
         self.write_file(vacancies)
+#
