@@ -1,8 +1,11 @@
+import operator
 from abc import ABC, abstractmethod
 
 import json
+from datetime import datetime
 from operator import itemgetter
 from classes.vacancy import Vacancy
+
 
 def write_file(filename):
     pass
@@ -16,6 +19,7 @@ def save_to_json(vacancy, filename):
         f.write(json.dumps(vacs, indent=2, ensure_ascii=False))
     print(f'\nЗаписано {len(vacs)} вакансий в файл {filename}\n')
 
+
 def hh_for_dict(hh_vacancies):
     hh_vacancies_dict = []
     for vacancy in hh_vacancies:
@@ -28,6 +32,7 @@ def hh_for_dict(hh_vacancies):
         hh_vacancies_dict.append(hh_vacancy)
     return hh_vacancies_dict
 
+
 def sj_for_dict(superjob_vacancies):
     sj_vacancies_dict = []
     for vacancy in superjob_vacancies:
@@ -39,6 +44,54 @@ def sj_for_dict(superjob_vacancies):
                              None)
         sj_vacancies_dict.append(sj_vacancy)
     return sj_vacancies_dict
+
+
+def sorted_data(list_vacancies):
+    """
+    Сортируем по дате список вакансий.
+    """
+    for item in list_vacancies:
+        if 'superjob.ru' in item['url']:
+            item['published_at'] = datetime.fromtimestamp(item['published_at'])
+            item['published_at'] = item['published_at'].strftime('%d-%m-%Y %H:%M:%S')
+            item['published_at'] = datetime.strptime(item['published_at'], '%d-%m-%Y %H:%M:%S')
+        else:
+            item['published_at'] = datetime.fromisoformat(item['published_at'])
+            item['published_at'] = item['published_at'].strftime('%d-%m-%Y %H:%M:%S')
+            item['published_at'] = datetime.strptime(item['published_at'], '%d-%m-%Y %H:%M:%S')
+    sorted_list = sorted(list_vacancies, key=operator.itemgetter('published_at'), reverse=True)
+    for item in sorted_list:
+        item['published_at'] = item['published_at'].strftime('%d-%m-%Y %H:%M:%S')
+    return sorted_list
+
+
+def instance_vacancy_sorted(data):
+    """
+    Создаем список экземпляров класса, полученные после всех сортировок и фильтров.
+    """
+    vacancy_list = []
+    for item in data:
+        vacancy = Vacancy(item["name"],
+                          item["salary_from"],
+                          item["salary_to"],
+                          item["url"],
+                          item["info"],
+                          item["responsibility"],
+                          item["published_at"])
+        vacancy_list.append(vacancy)
+    return vacancy_list
+
+
+def top_n_vacancies(list_vacancies, n):
+    """
+    Выводим top N вакансий.
+    """
+    counter = 1
+    for item in list_vacancies:
+        print(item)
+        counter += 1
+        if counter > n:
+            break
 
 
 class APIIteraction(ABC):
@@ -68,6 +121,9 @@ class APIIteraction(ABC):
             data = json.load(f)
         return data
 
+    def save_json(self, list_vacancy):
+        pass
+
 
 class SaveToJSON(APIIteraction):
     """
@@ -78,6 +134,14 @@ class SaveToJSON(APIIteraction):
         with open(filename, 'w', encoding='UTF-8') as f:
             f.write(json.dumps(vacancy, indent=2, ensure_ascii=False))
         print(f'\nЗаписано {len(vacancy)} вакансий в файл {filename}')
+
+    def save_json(self, list_vacancy):
+        new_list = []
+        for item in list_vacancy:
+            new_list.append(item.__dict__)
+        with open("data/vacancy.json", 'w') as f:
+            f.write(json.dumps(new_list, indent=4, ensure_ascii=False))
+        print('\nВсе вакансии по вашему запросу сохранены в JSON-файл.')
 
 
 class LoadFileJSON(APIIteraction):
@@ -112,7 +176,7 @@ class DeleteFileJSON(APIIteraction):
 
     def delete_vacancy(self, vacancy_del_url, filename):
         vacancies = []
-        for vacancy in self.read_file('json/suitable_vacancies.json'):
+        for vacancy in self.read_file('data/suitable_vacancies.json'):
             if vacancy['url'] != vacancy_del_url:
                 vacancies.append(vacancy)
         self.add_vacancy(vacancies, filename)
@@ -127,7 +191,7 @@ class RespondFileJSON(APIIteraction):
 
     def get_vacancies_by_response(self, response, filename):
         vacancies = []
-        for vacancy in self.read_file('json/suitable_vacancies.json'):
+        for vacancy in self.read_file('data/suitable_vacancies.json'):
             if response in str(vacancy['info']) or response in str(vacancy['name']):
                 vacancies.append(vacancy)
         self.add_vacancy(vacancies, filename)
@@ -139,9 +203,20 @@ class SortFileJSON(APIIteraction):
             f.write(json.dumps(vacancy, indent=2, ensure_ascii=False))
         print(f'\nЗаписано {len(vacancy)} вакансий в файл {filename} соответствующих запросу')
 
-    def sort_vacancy(self, list_vacancies, filename_to):
-        # vacancies = []
-        vacancies = sorted(list_vacancies, key=itemgetter('salary_from'))
-        # vacancies = sorted(list_vacancies, key=lambda d: d['salary_from'])
-        # vacancies = list_vacancies.sort(key=lambda x: x['salary_from'], reverse=True)
-        self.add_vacancy(vacancies, filename_to)
+    def sorted_data(list_vacancies):
+        """
+        Сортируем по дате список вакансий.
+        """
+        for item in list_vacancies:
+            if 'superjob.ru' in item['url']:
+                item['published_at'] = datetime.fromtimestamp(item['published_at'])
+                item['published_at'] = item['published_at'].strftime('%d-%m-%Y %H:%M:%S')
+                item['published_at'] = datetime.strptime(item['published_at'], '%d-%m-%Y %H:%M:%S')
+            else:
+                item['published_at'] = datetime.fromisoformat(item['published_at'])
+                item['published_at'] = item['published_at'].strftime('%d-%m-%Y %H:%M:%S')
+                item['published_at'] = datetime.strptime(item['published_at'], '%d-%m-%Y %H:%M:%S')
+        sorted_list = sorted(list_vacancies, key=operator.itemgetter('published_at'), reverse=True)
+        for item in sorted_list:
+            item['published_at'] = item['published_at'].strftime('%d-%m-%Y %H:%M:%S')
+        return sorted_list
