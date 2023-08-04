@@ -11,13 +11,13 @@ def write_file(filename):
     pass
 
 
-def save_to_json(vacancy, filename):
-    vacs = []
-    for item in vacancy:
-        vacs.append(item.__dict__)
-    with open(filename, 'w', encoding='UTF-8') as f:
-        f.write(json.dumps(vacs, indent=2, ensure_ascii=False))
-    print(f'\nЗаписано {len(vacs)} вакансий в файл {filename}\n')
+# def save_to_json(vacancy, filename):
+#     vacs = []
+#     for item in vacancy:
+#         vacs.append(item.__dict__)
+#     with open(filename, 'w', encoding='UTF-8') as f:
+#         f.write(json.dumps(vacs, indent=2, ensure_ascii=False))
+#     print(f'\nЗаписано {len(vacs)} вакансий в файл {filename}\n')
 
 
 def hh_for_dict(hh_vacancies):
@@ -28,7 +28,8 @@ def hh_for_dict(hh_vacancies):
                              vacancy['salary']['to'],
                              vacancy['alternate_url'],
                              vacancy['snippet']['requirement'],
-                             vacancy['snippet']['responsibility'])
+                             vacancy['snippet']['responsibility'],
+                             vacancy["published_at"])
         hh_vacancies_dict.append(hh_vacancy)
     return hh_vacancies_dict
 
@@ -41,7 +42,8 @@ def sj_for_dict(superjob_vacancies):
                              vacancy['payment_to'],
                              vacancy['link'],
                              vacancy['candidat'],
-                             None)
+                             None,
+                             vacancy["date_published"])
         sj_vacancies_dict.append(sj_vacancy)
     return sj_vacancies_dict
 
@@ -86,12 +88,15 @@ def top_n_vacancies(list_vacancies, n):
     """
     Выводим top N вакансий.
     """
+    list_top = []
     counter = 1
     for item in list_vacancies:
         print(item)
+        list_top.append(item)
         counter += 1
         if counter > n:
             break
+    return list_top
 
 
 class APIIteraction(ABC):
@@ -102,6 +107,9 @@ class APIIteraction(ABC):
 
     @abstractmethod
     def add_vacancy(self, vacancy, filename):
+        pass
+
+    def add_vacancies(self, vacancy, vacancy2, filename):
         pass
 
     def get_vacancies_by_response(self, response, filename):
@@ -121,7 +129,7 @@ class APIIteraction(ABC):
             data = json.load(f)
         return data
 
-    def save_json(self, list_vacancy):
+    def save_json(self, list_vacancy, file_name):
         pass
 
 
@@ -135,11 +143,21 @@ class SaveToJSON(APIIteraction):
             f.write(json.dumps(vacancy, indent=2, ensure_ascii=False))
         print(f'\nЗаписано {len(vacancy)} вакансий в файл {filename}')
 
-    def save_json(self, list_vacancy):
+    def add_vacancies(self, vacancy, vacancy2, filename):
+        new_list = []
+        for item in vacancy:
+            new_list.append(item.__dict__)
+        for item in vacancy2:
+            new_list.append(item.__dict__)
+        with open(filename, 'w', encoding='UTF-8') as f:
+            f.write(json.dumps(new_list, indent=2, ensure_ascii=False))
+        print(f'\nЗаписано {len(new_list)} вакансий.\n')
+
+    def save_json(self, list_vacancy, file_name):
         new_list = []
         for item in list_vacancy:
             new_list.append(item.__dict__)
-        with open("data/vacancy.json", 'w') as f:
+        with open(file_name, 'w', encoding='utf-8') as f:
             f.write(json.dumps(new_list, indent=4, ensure_ascii=False))
         print('\nВсе вакансии по вашему запросу сохранены в JSON-файл.')
 
