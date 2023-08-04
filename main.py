@@ -117,7 +117,7 @@ def user_interaction():
     #                            vacancy['salary_from'],
     #                            vacancy['salary_to'],
     #                            vacancy['url'],
-    #                            vacancy['info'],
+    #                            vacancy['info'], f
     #                            vacancy['responsibility'],
     #                            vacancy["published_at"])
     #     suitable_vacancies.append(suit_vacancy)
