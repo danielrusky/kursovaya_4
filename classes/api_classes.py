@@ -78,3 +78,5 @@ class SuperJobAPI(APIWorker):
             else:
                 break
         return self.vacancies
+
+

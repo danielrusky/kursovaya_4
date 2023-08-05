@@ -22,3 +22,6 @@ class Vacancy:
 
 
 
+
+
+
